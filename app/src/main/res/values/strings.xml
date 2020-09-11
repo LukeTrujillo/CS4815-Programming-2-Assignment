@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Basketball Game App</string>
+    <string name="team_a_name">Team A</string>
+    <string name="team_b_name">Team B</string>
+    <string name="team_a_score">0</string>
+    <string name="team_b_score">0</string>
+    <string name="three_point_btn">+3 Pts</string>
+    <string name="two_point_btn">+2 Pts</string>
+    <string name="free_throw_btn">+1 Pts</string>
+    <string name="reset_btn">New Game</string>
+    <string name="hypen">-</string>
+</resources>
