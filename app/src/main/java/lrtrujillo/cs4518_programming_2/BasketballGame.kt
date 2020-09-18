@@ -2,11 +2,19 @@ package lrtrujillo.cs4518_programming_2
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import java.sql.Timestamp
+import java.util.*
 
 class BasketballGameViewModel : ViewModel() {
 
     var teamAScore: Int = 0
     var teamBScore: Int = 0
+    var teamAName: String = "Team A";
+    var teamBName: String = "Team B";
+
+    var timestamp: Long = System.currentTimeMillis();
+
+
 
     override fun onCleared() {
         super.onCleared();

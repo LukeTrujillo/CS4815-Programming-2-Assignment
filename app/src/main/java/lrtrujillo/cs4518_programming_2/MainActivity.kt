@@ -22,11 +22,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_scoreboard);
+        /*val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_scoreboard);
 
         if(currentFragment == null) {
             val fragment = ScoreboardFragment()
             supportFragmentManager.beginTransaction().add(R.id.fragment_scoreboard, fragment).commit()
+        }*/
+
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.basketball_game_recycler_view);
+
+        if(currentFragment == null) {
+            val fragment = BasketballGameFragmentList.newInstance()
+            supportFragmentManager.beginTransaction().add(R.id.basketball_game_recycler_view, fragment).commit()
         }
     }
 

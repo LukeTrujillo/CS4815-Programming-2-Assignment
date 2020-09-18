@@ -8,8 +8,13 @@
     android:theme="@style/AppTheme"
     tools:context=".MainActivity">
 
-    <FrameLayout
+   <!-- <FrameLayout
         android:id="@+id/fragment_scoreboard"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>-->
+
+    <FrameLayout
+        android:id="@+id/basketball_game_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
