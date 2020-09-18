@@ -1,5 +1,8 @@
 package lrtrujillo.cs4518_programming_2
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
@@ -14,7 +18,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 private const val SCORE_A = "score_a"
 private const val SCORE_B = "score_b"
 
+private const val CUTE_DOG_REQUEST_CODE = 1;
+
 class MainActivity : AppCompatActivity() {
+
+    private val TAG = "MainActivity";
 
     private lateinit var teamAThreePointButton: Button
     private lateinit var teamATwoPointButton: Button
@@ -23,6 +31,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var teamBThreePointButton: Button
     private lateinit var teamBTwoPointButton: Button
     private lateinit var teamBFreethrowButton: Button
+
+    private lateinit var saveButton: Button;
+    private lateinit var displayButton: Button;
 
     private lateinit var resetButton: Button
 
@@ -48,6 +59,9 @@ class MainActivity : AppCompatActivity() {
         teamBTwoPointButton = findViewById(R.id.teamBTwoPointBtn)
         teamBFreethrowButton = findViewById(R.id.teamBFreeThrowBtn)
 
+        displayButton = findViewById(R.id.displayButton);
+        saveButton = findViewById(R.id.saveButton);
+
         resetButton = findViewById(R.id.resetButton)
 
         val currentScoreA = savedInstanceState?.getInt(SCORE_A, 0) ?: 0
@@ -60,6 +74,20 @@ class MainActivity : AppCompatActivity() {
         teamAScore = findViewById(R.id.teamAScore)
         teamBScore = findViewById(R.id.teamBScore)
         updateScores();
+
+
+        saveButton.setOnClickListener {view: View ->
+
+            Log.d(TAG, "saveButton.setOnClickListenerCalled()");
+
+            val intent = Intent(this, CuteDogActivity::class.java);
+            intent.putExtra("TEAM_A_NAME", teamALabel.text);
+            intent.putExtra("TEAM_B_NAME", teamBLabel.text);
+            intent.putExtra("TEAM_A_SCORE", game.getScoreTeamA());
+            intent.putExtra("Team_B_SCORE", game.getScoreTeamB());
+
+            startActivityForResult(intent, CUTE_DOG_REQUEST_CODE);
+        }
 
 
 
@@ -122,5 +150,16 @@ class MainActivity : AppCompatActivity() {
     private fun updateScores() {
         teamAScore.setText(game.getScoreTeamA().toString())
         teamBScore.setText(game.getScoreTeamB().toString())
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("MainActivity", "onActivityResult() called");
+
+        if(resultCode == Activity.RESULT_OK) {
+          Toast.makeText(this, R.string.cute_dog, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.ugly_dog, Toast.LENGTH_SHORT).show()
+        }
     }
 }

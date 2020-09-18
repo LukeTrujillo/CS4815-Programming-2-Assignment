@@ -100,9 +100,11 @@
                     android:id="@+id/teamALabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:editable="true"
                     android:gravity="center"
                     android:text="@string/team_a_name"
-                    android:textColor="#F44336" />
+                    android:textColor="#F44336"
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/teamAThreePointBtn"
@@ -138,9 +140,11 @@
                     android:id="@+id/teamBLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:editable="true"
                     android:gravity="center"
                     android:text="@string/team_b_name"
-                    android:textColor="#2196F3" />
+                    android:textColor="#2196F3"
+                    android:textSize="18sp" />
 
                 <Button
                     android:id="@+id/teamBThreePointBtn"
@@ -167,14 +171,37 @@
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/resetButton"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="25dp"
-            android:text="@string/reset_btn" />
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/resetButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/reset_btn" />
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/save" />
+
+            <Button
+                android:id="@+id/displayButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/display" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
