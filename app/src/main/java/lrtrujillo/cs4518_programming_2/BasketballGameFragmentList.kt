@@ -147,7 +147,7 @@ class BasketballGameFragmentList : Fragment() {
 
         fun newInstance(winningTeam: String) : BasketballGameFragmentList {
             val args = Bundle().apply {
-                putSerializable(ARG_BASKETBALL_GAME_ID, winningTeam)
+                putString(ARG_BASKETBALL_GAME_ID, winningTeam)
             }
 
             return BasketballGameFragmentList().apply {
