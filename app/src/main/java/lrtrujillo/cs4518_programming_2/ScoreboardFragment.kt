@@ -1,6 +1,7 @@
 package lrtrujillo.cs4518_programming_2
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -34,6 +35,14 @@ private const val CUTE_DOG_REQUEST_CODE = 1;
 class ScoreboardFragment : Fragment() {
 
     private val TAG = "ScoreboardFragment";
+
+
+    interface Callbacks {
+        fun onDisplayPressed(winningTeam:String);
+    }
+
+
+    private var callbacks: Callbacks? = null
 
     private lateinit var teamAThreePointButton: Button
     private lateinit var teamATwoPointButton: Button
@@ -83,6 +92,14 @@ class ScoreboardFragment : Fragment() {
         teamBScore.setText(game.getScoreTeamB().toString())
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context);
+        callbacks = context as Callbacks
+    }
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -134,8 +151,6 @@ class ScoreboardFragment : Fragment() {
             startActivityForResult(intent, CUTE_DOG_REQUEST_CODE);
         }
 
-
-
         teamAThreePointButton.setOnClickListener { view: View ->
             game.addScoreTeamA(3);
             updateScores()
@@ -164,7 +179,15 @@ class ScoreboardFragment : Fragment() {
             game.reset()
             updateScores()
         }
+        displayButton.setOnClickListener { view: View ->
+
+            if(game.teamBScore > game.teamAScore)
+                callbacks?.onDisplayPressed("Team B");
+            else
+                callbacks?.onDisplayPressed("Team A");
+        }
     }
+
 
     companion object {
         /**

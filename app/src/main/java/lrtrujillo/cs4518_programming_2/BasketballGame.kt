@@ -2,10 +2,14 @@ package lrtrujillo.cs4518_programming_2
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.sql.Timestamp
 import java.util.*
 
 class BasketballGameViewModel : ViewModel() {
+
+    var uuid: UUID = UUID.randomUUID()
 
     var teamAScore: Int = 0
     var teamBScore: Int = 0
@@ -48,3 +52,6 @@ class BasketballGameViewModel : ViewModel() {
         Log.d("BasketballGameViewModel", "reset() called -- Team A & Team B both have a score of 0");
     }
 }
+
+@Entity
+data class BasketballGame(@PrimaryKey val id: UUID = UUID.randomUUID(), var teamAName: String = "Team A", var teamBName: String = "Team B", var teamAScore:Int = 0, var teamBScore:Int = 0, var timestamp: Long = System.currentTimeMillis())

@@ -71,6 +71,7 @@ class BasketballGameFragmentList : Fragment() {
         val timestampText: TextView = itemView.findViewById(R.id.date);
         val teamText: TextView = itemView.findViewById(R.id.team);
         val scoreText: TextView = itemView.findViewById(R.id.score);
+        val indexText: TextView = itemView.findViewById(R.id.index);
     }
 
     private inner class BasketballGameAdapter(var games: List<BasketballGameViewModel>) : RecyclerView.Adapter<BasketballGameHolder>() {
@@ -93,6 +94,8 @@ class BasketballGameFragmentList : Fragment() {
 
                 teamText.setText("Team ${game.teamAName} : Team ${game.teamBName}");
                 scoreText.setText("${game.teamAScore}:${game.teamBScore}");
+
+                indexText.setText("Game #${position}");
             }
         }
 

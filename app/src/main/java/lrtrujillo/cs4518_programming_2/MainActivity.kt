@@ -15,25 +15,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ScoreboardFragment.Callbacks {
    private val TAG = "MainActivity";
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /*val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_scoreboard);
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container);
 
         if(currentFragment == null) {
             val fragment = ScoreboardFragment()
-            supportFragmentManager.beginTransaction().add(R.id.fragment_scoreboard, fragment).commit()
-        }*/
-
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.basketball_game_recycler_view);
-
-        if(currentFragment == null) {
-            val fragment = BasketballGameFragmentList.newInstance()
-            supportFragmentManager.beginTransaction().add(R.id.basketball_game_recycler_view, fragment).commit()
+            supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
         }
     }
 
@@ -61,5 +54,12 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, R.string.ugly_dog, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onDisplayPressed(winningTeam: String) {
+        Log.d(TAG, "MainActivity.onDisplayPressed(${winningTeam})");
+
+        val fragment = BasketballGameFragmentList.newInstance(winningTeam)
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
     }
 }
