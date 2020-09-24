@@ -56,7 +56,7 @@ class BasketballGameFragmentList : Fragment() {
 
         return view;
     }
-    private fun update(games: List<BasketballGame>) {
+    private fun update(games: List<Game>) {
         adapter = BasketballGameAdapter(games);
         basketballGameRecyclerView.adapter = adapter;
     }
@@ -106,7 +106,7 @@ class BasketballGameFragmentList : Fragment() {
         val winningIcon: ImageView = itemView.findViewById(R.id.winningTeamIcon);
     }
 
-    private inner class BasketballGameAdapter(var games: List<BasketballGame>) : RecyclerView.Adapter<BasketballGameHolder>() {
+    private inner class BasketballGameAdapter(var games: List<Game>) : RecyclerView.Adapter<BasketballGameHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasketballGameHolder {
             val view = layoutInflater.inflate(R.layout.list_item_basketball_game, parent, false)
             return BasketballGameHolder(view)
