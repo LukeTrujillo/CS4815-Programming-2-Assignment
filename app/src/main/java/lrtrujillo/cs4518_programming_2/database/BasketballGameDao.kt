@@ -12,10 +12,10 @@ import java.util.*
 @Dao
 interface BasketballGameDao {
 
-    @Query("SELECT * FROM basketballgame")
+    @Query("SELECT * FROM table_game")
     fun getBasketballGames() : LiveData<List<BasketballGame>>
 
-    @Query("SELECT * FROM basketballgame WHERE id=(:id)")
+    @Query("SELECT * FROM table_game WHERE id=(:id)")
     fun getBasketballGame(id: UUID): LiveData<BasketballGame?>
 
     @Insert
@@ -24,10 +24,10 @@ interface BasketballGameDao {
     @Update
     fun updateBasketballGame(basketballGame: BasketballGame)
 
-    @Query("SELECT * FROM basketballgame WHERE teamAScore >= teamBScore")
+    @Query("SELECT * FROM table_game WHERE teamAScore >= teamBScore")
     fun getTeamAWins() : LiveData<List<BasketballGame>>
 
-    @Query("SELECT * FROM basketballgame WHERE teamAScore < teamBScore")
+    @Query("SELECT * FROM table_game WHERE teamAScore < teamBScore")
     fun getTeamBWins() : LiveData<List<BasketballGame>>
 
 }

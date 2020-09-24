@@ -53,5 +53,5 @@ class BasketballGameViewModel : ViewModel() {
     }
 }
 
-@Entity
-data class BasketballGame(@PrimaryKey val id: UUID = UUID.randomUUID(), var teamAName: String = "Team A", var teamBName: String = "Team B", var teamAScore:Int = 0, var teamBScore:Int = 0, var timestamp: Long = System.currentTimeMillis())
+@Entity(tableName = "table_game")
+data class BasketballGame(@PrimaryKey val id: UUID = UUID.randomUUID(), var teamAName: String = "Team A", var teamBName: String = "Team B", var teamAScore:Int = 0, var teamBScore:Int = 0, var date: Long = System.currentTimeMillis())

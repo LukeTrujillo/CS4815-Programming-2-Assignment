@@ -1,6 +1,7 @@
 package lrtrujillo.cs4518_programming_2.repo
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Room
 import lrtrujillo.cs4518_programming_2.BasketballGame
@@ -10,7 +11,7 @@ import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.Executors
 
-private const val DATABASE_NAME: String = "basketballgame-database"
+private const val DATABASE_NAME: String = "game-database"
 
 class BasketballGameRepository private constructor(context: Context) {
 
@@ -20,11 +21,14 @@ class BasketballGameRepository private constructor(context: Context) {
         context.applicationContext,
         BasketballGameDatabase::class.java,
         DATABASE_NAME
-    ).build()
+    ).fallbackToDestructiveMigration().build()
 
     private val basketballGameDao = database.basketballGameDao()
 
-    fun getBasketballGames() : LiveData<List<BasketballGame>> = basketballGameDao.getBasketballGames()
+    fun getBasketballGames() : LiveData<List<BasketballGame>>  {
+        Log.d("dsd", basketballGameDao.getBasketballGames().value.toString());
+        return basketballGameDao.getBasketballGames()
+    }
     fun getBasketballGame(id: UUID) : LiveData<BasketballGame?> = basketballGameDao.getBasketballGame(id)
 
     fun getTeamAWins() : LiveData<List<BasketballGame>> = basketballGameDao.getTeamAWins()

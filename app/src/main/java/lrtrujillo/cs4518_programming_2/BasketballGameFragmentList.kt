@@ -1,5 +1,6 @@
 package lrtrujillo.cs4518_programming_2
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +26,15 @@ private const val ARG_BASKETBALL_GAME_ID = "basketball_game_id"
  * create an instance of this fragment.
  */
 class BasketballGameFragmentList : Fragment() {
+
+    interface Callbacks {
+        fun onBasketballGamePressed(uuid:UUID);
+    }
+
+
+    private var callbacks: Callbacks? = null
+
+
     // TODO: Rename and change types of parameters
     private var winningTeam: String? = null
     private val TAG:String = "BasketballGameFragment";
@@ -41,6 +52,14 @@ class BasketballGameFragmentList : Fragment() {
         this.winningTeam = arguments?.getString(ARG_BASKETBALL_GAME_ID);
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context);
+        callbacks = context as Callbacks
+    }
+    override fun onDetach() {
+        super.onDetach()
+        callbacks = null
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,7 +75,7 @@ class BasketballGameFragmentList : Fragment() {
 
         return view;
     }
-    private fun update(games: List<Game>) {
+    private fun update(games: List<BasketballGame>) {
         adapter = BasketballGameAdapter(games);
         basketballGameRecyclerView.adapter = adapter;
     }
@@ -98,15 +117,33 @@ class BasketballGameFragmentList : Fragment() {
     }
 
 
-    private inner class BasketballGameHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val timestampText: TextView = itemView.findViewById(R.id.date);
-        val teamText: TextView = itemView.findViewById(R.id.team);
-        val scoreText: TextView = itemView.findViewById(R.id.score);
+        private inner class BasketballGameHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+            init {
+                itemView.setOnClickListener(this);
+            }
 
-        val winningIcon: ImageView = itemView.findViewById(R.id.winningTeamIcon);
+            private lateinit var game: BasketballGame;
+
+            val timestampText: TextView = itemView.findViewById(R.id.date);
+            val teamText: TextView = itemView.findViewById(R.id.team);
+            val scoreText: TextView = itemView.findViewById(R.id.score);
+
+            val winningIcon: ImageView = itemView.findViewById(R.id.winningTeamIcon);
+
+            val constraintLayout : ConstraintLayout = itemView.findViewById(R.id.basketballGameItem);
+
+            fun bind(game: BasketballGame) {
+                this.game = game;
+            }
+
+            override fun onClick(view: View) {
+                Log.d(TAG, "List item clicked")
+                callbacks?.onBasketballGamePressed(game.id);
+            }
+
     }
 
-    private inner class BasketballGameAdapter(var games: List<Game>) : RecyclerView.Adapter<BasketballGameHolder>() {
+    private inner class BasketballGameAdapter(var games: List<BasketballGame>) : RecyclerView.Adapter<BasketballGameHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BasketballGameHolder {
             val view = layoutInflater.inflate(R.layout.list_item_basketball_game, parent, false)
             return BasketballGameHolder(view)
@@ -117,14 +154,14 @@ class BasketballGameFragmentList : Fragment() {
         }
 
         override fun onBindViewHolder(holder: BasketballGameHolder, position: Int) {
-            val game = games[position]
+            var game = games[position]
 
             holder.apply {
                 val simple: DateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss")
-                val result = Date(game.timestamp)
+                val result = Date(game.date)
                 timestampText.setText(simple.format(result));
 
-                teamText.setText("Team ${game.teamAName} : Team ${game.teamBName}");
+                teamText.setText("${game.teamAName} : ${game.teamBName}");
                 scoreText.setText("${game.teamAScore}:${game.teamBScore}");
 
                 if(game.teamAScore < game.teamBScore) {
@@ -133,7 +170,11 @@ class BasketballGameFragmentList : Fragment() {
                 } else {
                     winningIcon.setImageResource(R.drawable.celtics)
                 }
+
             }
+
+
+
         }
 
     }

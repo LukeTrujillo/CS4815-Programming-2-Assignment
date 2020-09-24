@@ -14,8 +14,9 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
-class MainActivity : AppCompatActivity(), ScoreboardFragment.Callbacks {
+class MainActivity : AppCompatActivity(), ScoreboardFragment.Callbacks, BasketballGameFragmentList.Callbacks {
    private val TAG = "MainActivity";
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +55,11 @@ class MainActivity : AppCompatActivity(), ScoreboardFragment.Callbacks {
         } else {
             Toast.makeText(this, R.string.ugly_dog, Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun onBasketballGamePressed(uuid: UUID) {
+        val fragment = BasketballGameFragmentList.newInstance("") //set the new team to the fragment
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
     }
 
     override fun onDisplayPressed(winningTeam: String) {
