@@ -1,10 +1,7 @@
 package lrtrujillo.cs4518_programming_2.database
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import lrtrujillo.cs4518_programming_2.BasketballGame
 import lrtrujillo.cs4518_programming_2.BasketballGameViewModel
 import java.util.*
@@ -18,7 +15,7 @@ interface BasketballGameDao {
     @Query("SELECT * FROM table_game WHERE id=(:id)")
     fun getBasketballGame(id: UUID): LiveData<BasketballGame?>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addBasketballGame(basketballGame: BasketballGame)
 
     @Update
@@ -29,5 +26,7 @@ interface BasketballGameDao {
 
     @Query("SELECT * FROM table_game WHERE teamAScore < teamBScore")
     fun getTeamBWins() : LiveData<List<BasketballGame>>
+
+
 
 }

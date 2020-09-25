@@ -1,6 +1,5 @@
 package lrtrujillo.cs4518_programming_2
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,11 +9,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -44,6 +44,8 @@ class ScoreboardFragment : Fragment() {
 
     private var callbacks: Callbacks? = null
 
+    private lateinit var game: BasketballGame;
+
     private lateinit var teamAThreePointButton: Button
     private lateinit var teamATwoPointButton: Button
     private lateinit var teamAFreethrowButton: Button
@@ -60,20 +62,29 @@ class ScoreboardFragment : Fragment() {
     private lateinit var teamAScore: TextView
     private lateinit var teamBScore: TextView
 
-    private val game: BasketballGameViewModel by lazy {
+    private lateinit var teamAName: TextView
+    private lateinit var teamBName: TextView
+
+    private val gameViewModel: BasketballGameViewModel by lazy {
         ViewModelProviders.of(this).get(BasketballGameViewModel::class.java)
     }
 
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
-    private var param2: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+        }
+
+        this.game = BasketballGame()
+
+
+        if(param1 != null && arguments != null) {
+            val gameUUID: UUID = UUID.fromString(arguments?.getSerializable(ARG_PARAM1).toString())
+            gameViewModel.loadGame(gameUUID)
         }
 
         Log.d(TAG, "onCreate(savedInstanceState: Bundle?) called");
@@ -83,13 +94,16 @@ class ScoreboardFragment : Fragment() {
         super.onSaveInstanceState(savedInstanceState);
         Log.d("MainActivity", "onSaveInstanceState(savedInstanceState: Bundle) called");
 
-        savedInstanceState.putInt(SCORE_A, game.getScoreTeamA())
-        savedInstanceState.putInt(SCORE_B, game.getScoreTeamB())
+        savedInstanceState.putInt(SCORE_A, game.teamAScore)
+        savedInstanceState.putInt(SCORE_B, game.teamBScore)
     }
 
     private fun updateScores() {
-        teamAScore.setText(game.getScoreTeamA().toString())
-        teamBScore.setText(game.getScoreTeamB().toString())
+        teamAName.setText(game.teamAName)
+        teamBName.setText(game.teamBName)
+
+        teamAScore.setText(game.teamAScore.toString())
+        teamBScore.setText(game.teamBScore.toString())
     }
 
     override fun onAttach(context: Context) {
@@ -129,10 +143,37 @@ class ScoreboardFragment : Fragment() {
 
         teamAScore = view.findViewById(R.id.teamAScore)
         teamBScore = view.findViewById(R.id.teamBScore)
+
+        teamAName = view.findViewById(R.id.teamALabel)
+        teamBName = view.findViewById(R.id.teamBLabel)
+
+
+        if(param1 != null) {
+            Log.d(TAG, "Param1 (UUID) received")
+            Log.d(TAG, "Game loaded ${game.teamAName} vs ${game.teamBName} (${game.teamAScore} - ${game.teamBName})")
+
+            teamAName.setText(game.teamAName)
+            teamAName.setText(game.teamBName)
+        }
+
         updateScores();
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        gameViewModel.gameLiveData.observe(
+            viewLifecycleOwner,
+            androidx.lifecycle.Observer { game ->
+                game?.let {
+                    this.game = game;
+                    updateScores()
+                }
+            }
+        )
     }
 
     override fun onStart() {
@@ -140,51 +181,58 @@ class ScoreboardFragment : Fragment() {
 
         saveButton.setOnClickListener {view: View ->
 
-            Log.d(TAG, "saveButton.setOnClickListenerCalled()");
+            Log.d(TAG, "saveButton.setOnClickListenerbed()");
 
             val intent = Intent(activity, CuteDogActivity::class.java);
             intent.putExtra("TEAM_A_NAME", teamALabel.text);
             intent.putExtra("TEAM_B_NAME", teamBLabel.text);
-            intent.putExtra("TEAM_A_SCORE", game.getScoreTeamA());
-            intent.putExtra("TEAM_B_SCORE", game.getScoreTeamB());
+            intent.putExtra("TEAM_A_SCORE", game.teamAScore);
+            intent.putExtra("TEAM_B_SCORE", game.teamBName);
 
             startActivityForResult(intent, CUTE_DOG_REQUEST_CODE);
         }
 
         teamAThreePointButton.setOnClickListener { view: View ->
-            game.addScoreTeamA(3);
+            game.teamAScore += 3
             updateScores()
         }
         teamATwoPointButton.setOnClickListener { view: View ->
-            game.addScoreTeamA(2);
+            game.teamAScore += 2
             updateScores()
         }
         teamAFreethrowButton.setOnClickListener { view: View ->
-            game.addScoreTeamA(1);
+            game.teamAScore += 1
             updateScores()
         }
         teamBThreePointButton.setOnClickListener { view: View ->
-            game.addScoreTeamB(3);
+            game.teamBScore += 3
             updateScores()
         }
         teamBTwoPointButton.setOnClickListener { view: View ->
-            game.addScoreTeamB(2);
+            game.teamBScore += 2
             updateScores()
         }
         teamBFreethrowButton.setOnClickListener { view: View ->
-            game.addScoreTeamB(1);
+            game.teamBScore += 1
             updateScores()
         }
         resetButton.setOnClickListener { view: View ->
-            game.reset()
+            game.teamBScore = 0
+            game.teamAScore = 0
             updateScores()
         }
         displayButton.setOnClickListener { view: View ->
+
+            gameViewModel.saveGame(game)
 
             if(game.teamBScore > game.teamAScore)
                 callbacks?.onDisplayPressed("Team B");
             else
                 callbacks?.onDisplayPressed("Team A");
+        }
+        saveButton.setOnClickListener{view: View ->
+            gameViewModel.saveGame(game)
+            Toast.makeText(context, "Game saved", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -200,11 +248,10 @@ class ScoreboardFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
+        fun newInstance(param1: String) =
             ScoreboardFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }

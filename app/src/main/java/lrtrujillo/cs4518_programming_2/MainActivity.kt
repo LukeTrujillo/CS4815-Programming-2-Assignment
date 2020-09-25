@@ -1,19 +1,11 @@
 package lrtrujillo.cs4518_programming_2
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 class MainActivity : AppCompatActivity(), ScoreboardFragment.Callbacks, BasketballGameFragmentList.Callbacks {
@@ -58,7 +50,8 @@ class MainActivity : AppCompatActivity(), ScoreboardFragment.Callbacks, Basketba
     }
 
     override fun onBasketballGamePressed(uuid: UUID) {
-        val fragment = BasketballGameFragmentList.newInstance("") //set the new team to the fragment
+        Log.d(TAG, "onBasketballGamePressed(${uuid.toString()})h");
+        val fragment = ScoreboardFragment.newInstance(uuid.toString()); //set the new team to the fragment
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
     }
 

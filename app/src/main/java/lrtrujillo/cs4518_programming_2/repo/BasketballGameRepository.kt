@@ -35,6 +35,7 @@ class BasketballGameRepository private constructor(context: Context) {
     fun getTeamBWins() : LiveData<List<BasketballGame>> = basketballGameDao.getTeamBWins()
 
     fun addBasketballGame(game: BasketballGame) {
+        Log.d(DATABASE_NAME, "addBasketballGame(${game.id.toString()}")
         executor.execute {
             basketballGameDao.addBasketballGame(game)
         }

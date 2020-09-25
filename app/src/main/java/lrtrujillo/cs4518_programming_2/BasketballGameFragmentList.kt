@@ -134,6 +134,20 @@ class BasketballGameFragmentList : Fragment() {
 
             fun bind(game: BasketballGame) {
                 this.game = game;
+
+                val simple: DateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss")
+                val result = Date(game.date)
+                timestampText.setText(simple.format(result));
+
+                teamText.setText("${game.teamAName} : ${game.teamBName}");
+                scoreText.setText("${game.teamAScore}:${game.teamBScore}");
+
+                if(game.teamAScore < game.teamBScore) {
+                    //set team b score icon
+                    winningIcon.setImageResource(R.drawable.heat)
+                } else {
+                    winningIcon.setImageResource(R.drawable.celtics)
+                }
             }
 
             override fun onClick(view: View) {
@@ -156,24 +170,8 @@ class BasketballGameFragmentList : Fragment() {
         override fun onBindViewHolder(holder: BasketballGameHolder, position: Int) {
             var game = games[position]
 
-            holder.apply {
-                val simple: DateFormat = SimpleDateFormat("dd MMM yyyy HH:mm:ss")
-                val result = Date(game.date)
-                timestampText.setText(simple.format(result));
 
-                teamText.setText("${game.teamAName} : ${game.teamBName}");
-                scoreText.setText("${game.teamAScore}:${game.teamBScore}");
-
-                if(game.teamAScore < game.teamBScore) {
-                    //set team b score icon
-                    winningIcon.setImageResource(R.drawable.heat)
-                } else {
-                    winningIcon.setImageResource(R.drawable.celtics)
-                }
-
-            }
-
-
+            holder.bind(game);
 
         }
 

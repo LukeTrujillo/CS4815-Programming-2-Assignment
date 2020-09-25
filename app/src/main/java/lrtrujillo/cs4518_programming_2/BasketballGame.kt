@@ -1,13 +1,19 @@
 package lrtrujillo.cs4518_programming_2
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import lrtrujillo.cs4518_programming_2.repo.BasketballGameRepository
 import java.sql.Timestamp
 import java.util.*
 
 class BasketballGameViewModel : ViewModel() {
+
+    private val basketballGameRepository = BasketballGameRepository.get()
 
     var uuid: UUID = UUID.randomUUID()
 
@@ -16,9 +22,23 @@ class BasketballGameViewModel : ViewModel() {
     var teamAName: String = "Team A";
     var teamBName: String = "Team B";
 
-    var timestamp: Long = System.currentTimeMillis();
+    var date: Long = System.currentTimeMillis();
+
+    private val gameIDLiveData = MutableLiveData<UUID>()
 
 
+    var gameLiveData: LiveData<BasketballGame?> =
+        Transformations.switchMap(gameIDLiveData) { uuid ->
+            basketballGameRepository.getBasketballGame(uuid);
+        }
+
+    fun loadGame(id: UUID) {
+        gameIDLiveData.value = id
+    }
+
+    fun saveGame(game: BasketballGame) {
+            basketballGameRepository.addBasketballGame(game)
+    }
 
     override fun onCleared() {
         super.onCleared();
@@ -26,31 +46,6 @@ class BasketballGameViewModel : ViewModel() {
         Log.d("BasketballGameViewModel", "onCleared() called")
     }
 
-    fun addScoreTeamA(amt: Int) {
-        teamAScore  += amt
-
-        Log.d("BasketballGameViewModel", "addScoreTeamA(" + amt + ") called  -- score changed from " + (teamAScore - amt) + " to " + teamAScore)
-
-    }
-    fun addScoreTeamB(amt: Int) {
-        teamBScore += amt
-        Log.d("BasketballGameViewModel", "addScoreTeamB(" + amt + ") called  -- score changed from " + (teamBScore - amt) + " to " + teamBScore)
-    }
-
-    fun getScoreTeamA() : Int {
-        Log.d("BasketballGameViewModel", "getScoreTeamA() called -- Team A has a score of " + teamAScore)
-        return teamAScore
-    }
-    fun getScoreTeamB() : Int {
-        Log.d("BasketballGameViewModel", "getScoreTeamB() called -- Team B has a score of " + teamBScore)
-        return teamBScore
-    }
-
-    fun reset() {
-        teamAScore = 0; teamBScore = 0;
-
-        Log.d("BasketballGameViewModel", "reset() called -- Team A & Team B both have a score of 0");
-    }
 }
 
 @Entity(tableName = "table_game")
