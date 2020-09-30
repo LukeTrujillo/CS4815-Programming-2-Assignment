@@ -2,18 +2,22 @@ package lrtrujillo.cs4518_programming_2
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -27,6 +31,8 @@ private const val SCORE_B = "score_b"
 
 private const val CUTE_DOG_REQUEST_CODE = 1;
 
+private const val REQUEST_PHOTO = 2;
+
 /**
  * A simple [Fragment] subclass.
  * Use the [ScoreboardFragment.newInstance] factory method to
@@ -36,11 +42,9 @@ class ScoreboardFragment : Fragment() {
 
     private val TAG = "ScoreboardFragment";
 
-
     interface Callbacks {
         fun onDisplayPressed(winningTeam:String);
     }
-
 
     private var callbacks: Callbacks? = null
 
@@ -65,6 +69,16 @@ class ScoreboardFragment : Fragment() {
     private lateinit var teamAName: TextView
     private lateinit var teamBName: TextView
 
+    private lateinit var teamAImageButton: ImageButton
+    private lateinit var teamBImageButton: ImageButton
+
+    private lateinit var teamAPhotoFile: File
+    private lateinit var teamBPhotoFile: File
+
+    private lateinit var teamAPhotoUri: Uri
+    private lateinit var teamBPhotoUri: Uri
+
+
     private val gameViewModel: BasketballGameViewModel by lazy {
         ViewModelProviders.of(this).get(BasketballGameViewModel::class.java)
     }
@@ -80,6 +94,9 @@ class ScoreboardFragment : Fragment() {
         }
 
         this.game = BasketballGame()
+
+        this.teamAPhotoFile = gameViewModel.getTeamAPhotoFile(game)
+        this.teamBPhotoFile = gameViewModel.getTeamBPhotoFile(game)
 
 
         if(param1 != null && arguments != null) {
@@ -147,6 +164,8 @@ class ScoreboardFragment : Fragment() {
         teamAName = view.findViewById(R.id.teamALabel)
         teamBName = view.findViewById(R.id.teamBLabel)
 
+        teamAImageButton = view.findViewById(R.id.teamAImageButton)
+        teamBImageButton = view.findViewById(R.id.teamBImageButton)
 
         if(param1 != null) {
             Log.d(TAG, "Param1 (UUID) received")
@@ -157,8 +176,6 @@ class ScoreboardFragment : Fragment() {
         }
 
         updateScores();
-
-        // Inflate the layout for this fragment
         return view;
     }
 
@@ -170,6 +187,18 @@ class ScoreboardFragment : Fragment() {
             androidx.lifecycle.Observer { game ->
                 game?.let {
                     this.game = game;
+
+                    teamAPhotoFile = gameViewModel.getTeamAPhotoFile(game)
+                    teamBPhotoFile = gameViewModel.getTeamBPhotoFile(game)
+
+                    teamAPhotoUri = FileProvider.getUriForFile(requireActivity(),
+                        "lrtrujillo.cs4518_programming_2.fileprovider",
+                        teamAPhotoFile)
+
+                    teamBPhotoUri = FileProvider.getUriForFile(requireActivity(),
+                        "lrtrujillo.cs4518_programming_2.fileprovider",
+                        teamBPhotoFile)
+
                     updateScores()
                 }
             }
@@ -234,8 +263,63 @@ class ScoreboardFragment : Fragment() {
             gameViewModel.saveGame(game)
             Toast.makeText(context, "Game saved", Toast.LENGTH_SHORT).show()
         }
-    }
 
+        teamAImageButton.apply {
+            val packageManager : PackageManager = requireActivity().packageManager
+
+            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val resolvedActivity: ResolveInfo? = packageManager.resolveActivity(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+
+            setOnClickListener {
+                teamAPhotoUri = FileProvider.getUriForFile(requireActivity(),
+                    "lrtrujillo.cs4518_programming_2.fileprovider",
+                    teamAPhotoFile)
+
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, teamAPhotoUri)
+                val cameraActivities: List<ResolveInfo> = packageManager.queryIntentActivities(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+
+                for(cameraActivity in cameraActivities) {
+                    requireActivity().grantUriPermission(cameraActivity.activityInfo.packageName, teamAPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                }
+
+                startActivityForResult(captureImage, REQUEST_PHOTO)
+
+            }
+         }
+        teamBImageButton.apply {
+            val packageManager : PackageManager = requireActivity().packageManager
+
+            val captureImage = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            val resolvedActivity: ResolveInfo? = packageManager.resolveActivity(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+
+
+            setOnClickListener {
+                teamBPhotoUri = FileProvider.getUriForFile(requireActivity(),
+                    "lrtrujillo.cs4518_programming_2.fileprovider",
+                    teamBPhotoFile)
+                Log.d(TAG, "teamBImageButton pressed, should launch a camera intent")
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, teamBPhotoUri)
+                val cameraActivities: List<ResolveInfo> = packageManager.queryIntentActivities(captureImage, PackageManager.MATCH_DEFAULT_ONLY)
+
+                for(cameraActivity in cameraActivities) {
+                    requireActivity().grantUriPermission(cameraActivity.activityInfo.packageName, teamBPhotoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                }
+
+                startActivityForResult(captureImage, REQUEST_PHOTO)
+
+                val bitmap = BitmapFactory.decodeFile(teamAPhotoFile.getPath())
+            }
+        }
+
+    }
+    private fun updatePhotoView() {
+        if (teamAPhotoFile.exists()) {
+        val bitmap = getScaledBitmap(teamAPhotoFile.path, requireActivity())
+            teamAPhotoFile.setImageBitmap(bitmap) //set to the photo view
+        } else {
+            photoView.setImageDrawable(null)
+        }
+    }
 
     companion object {
         /**

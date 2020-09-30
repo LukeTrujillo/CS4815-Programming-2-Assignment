@@ -7,6 +7,7 @@ import androidx.room.Room
 import lrtrujillo.cs4518_programming_2.BasketballGame
 import lrtrujillo.cs4518_programming_2.database.BasketballGameDao
 import lrtrujillo.cs4518_programming_2.database.BasketballGameDatabase
+import java.io.File
 import java.lang.IllegalStateException
 import java.util.*
 import java.util.concurrent.Executors
@@ -25,6 +26,8 @@ class BasketballGameRepository private constructor(context: Context) {
 
     private val basketballGameDao = database.basketballGameDao()
 
+    private val filesDir = context.applicationContext.filesDir
+
     fun getBasketballGames() : LiveData<List<BasketballGame>>  {
         Log.d("dsd", basketballGameDao.getBasketballGames().value.toString());
         return basketballGameDao.getBasketballGames()
@@ -33,6 +36,9 @@ class BasketballGameRepository private constructor(context: Context) {
 
     fun getTeamAWins() : LiveData<List<BasketballGame>> = basketballGameDao.getTeamAWins()
     fun getTeamBWins() : LiveData<List<BasketballGame>> = basketballGameDao.getTeamBWins()
+
+    fun getTeamAPhoto(game: BasketballGame) : File = File(filesDir, game.teamAPhotoName)
+    fun getTeamBPhoto(game: BasketballGame) : File = File(filesDir, game.teamBPhotoName)
 
     fun addBasketballGame(game: BasketballGame) {
         Log.d(DATABASE_NAME, "addBasketballGame(${game.id.toString()}")

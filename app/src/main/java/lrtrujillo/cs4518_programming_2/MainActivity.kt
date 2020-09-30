@@ -61,4 +61,6 @@ class MainActivity : AppCompatActivity(), ScoreboardFragment.Callbacks, Basketba
         val fragment = BasketballGameFragmentList.newInstance(winningTeam)
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
     }
+
+
 }
