@@ -92,9 +92,12 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/teamAImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="#872323"
+                    android:cropToPadding="true"
+                    android:scaleType="centerInside"
                     tools:src="@tools:sample/avatars" />
 
                 <ImageButton
@@ -144,9 +147,12 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/teamBImageView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:background="#2196F3"
+                    android:cropToPadding="true"
+                    android:scaleType="centerInside"
                     tools:src="@tools:sample/avatars" />
 
                 <ImageButton

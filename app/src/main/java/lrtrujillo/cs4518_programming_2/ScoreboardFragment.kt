@@ -1,5 +1,6 @@
 package lrtrujillo.cs4518_programming_2
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -78,6 +79,9 @@ class ScoreboardFragment : Fragment() {
     private lateinit var teamAPhotoUri: Uri
     private lateinit var teamBPhotoUri: Uri
 
+    private lateinit var teamAImageView: ImageView
+    private lateinit var teamBImageView: ImageView
+
 
     private val gameViewModel: BasketballGameViewModel by lazy {
         ViewModelProviders.of(this).get(BasketballGameViewModel::class.java)
@@ -130,6 +134,14 @@ class ScoreboardFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         callbacks = null
+
+        if(teamAPhotoUri != null)
+            requireActivity().revokeUriPermission(teamAPhotoUri,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+
+        if(teamBPhotoUri != null)
+          requireActivity().revokeUriPermission(teamBPhotoUri,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
 
     override fun onCreateView(
@@ -167,6 +179,9 @@ class ScoreboardFragment : Fragment() {
         teamAImageButton = view.findViewById(R.id.teamAImageButton)
         teamBImageButton = view.findViewById(R.id.teamBImageButton)
 
+        teamAImageView= view.findViewById(R.id.teamAImageView)
+        teamBImageView = view.findViewById(R.id.teamBImageView)
+
         if(param1 != null) {
             Log.d(TAG, "Param1 (UUID) received")
             Log.d(TAG, "Game loaded ${game.teamAName} vs ${game.teamBName} (${game.teamAScore} - ${game.teamBName})")
@@ -175,6 +190,7 @@ class ScoreboardFragment : Fragment() {
             teamAName.setText(game.teamBName)
         }
 
+        updatePhotoView();
         updateScores();
         return view;
     }
@@ -200,6 +216,7 @@ class ScoreboardFragment : Fragment() {
                         teamBPhotoFile)
 
                     updateScores()
+                    updatePhotoView()
                 }
             }
         )
@@ -315,9 +332,28 @@ class ScoreboardFragment : Fragment() {
     private fun updatePhotoView() {
         if (teamAPhotoFile.exists()) {
         val bitmap = getScaledBitmap(teamAPhotoFile.path, requireActivity())
-            teamAPhotoFile.setImageBitmap(bitmap) //set to the photo view
+            teamAImageView.setImageBitmap(bitmap) //set to the photo view
         } else {
-            photoView.setImageDrawable(null)
+            teamAImageView.setImageDrawable(null)
+        }
+
+        if (teamBPhotoFile.exists()) {
+            val bitmap = getScaledBitmap(teamBPhotoFile.path, requireActivity())
+            teamBImageView.setImageBitmap(bitmap) //set to the photo view
+        } else {
+            teamBImageView.setImageDrawable(null)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when {
+            resultCode != Activity.RESULT_OK -> return
+
+            requestCode == REQUEST_PHOTO -> {
+                updatePhotoView()
+            }
         }
     }
 
