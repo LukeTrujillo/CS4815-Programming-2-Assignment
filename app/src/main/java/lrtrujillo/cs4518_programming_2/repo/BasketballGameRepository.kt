@@ -37,8 +37,20 @@ class BasketballGameRepository private constructor(context: Context) {
     fun getTeamAWins() : LiveData<List<BasketballGame>> = basketballGameDao.getTeamAWins()
     fun getTeamBWins() : LiveData<List<BasketballGame>> = basketballGameDao.getTeamBWins()
 
-    fun getTeamAPhoto(game: BasketballGame) : File = File(filesDir, game.teamAPhotoName)
-    fun getTeamBPhoto(game: BasketballGame) : File = File(filesDir, game.teamBPhotoName)
+    fun getTeamAPhoto(game: BasketballGame) : File {
+        var file = File(filesDir, game.teamAPhotoName);
+
+        if(!file.exists()) { file = File(filesDir, "celtics.png") }
+
+        return file;
+    }
+    fun getTeamBPhoto(game: BasketballGame) : File {
+        var file = File(filesDir, game.teamBPhotoName);
+
+        if(!file.exists()) { file = File(filesDir, "heat.png") }
+
+        return file;
+    }
 
     fun addBasketballGame(game: BasketballGame) {
         Log.d(DATABASE_NAME, "addBasketballGame(${game.id.toString()}")

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.BitmapFactory
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,6 +19,14 @@ import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.teamALabel
+import kotlinx.android.synthetic.main.activity_main.teamBLabel
+import kotlinx.android.synthetic.main.fragment_scoreboard.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.File
 import java.util.*
 
@@ -82,6 +91,13 @@ class ScoreboardFragment : Fragment() {
     private lateinit var teamAImageView: ImageView
     private lateinit var teamBImageView: ImageView
 
+    private lateinit var teamACheerButton: ImageButton
+    private lateinit var teamBCheerButton: ImageButton
+
+    private lateinit var cheerPool: CheerPool;
+
+    private lateinit var weatherTextView: TextView;
+
 
     private val gameViewModel: BasketballGameViewModel by lazy {
         ViewModelProviders.of(this).get(BasketballGameViewModel::class.java)
@@ -100,6 +116,7 @@ class ScoreboardFragment : Fragment() {
         this.game = BasketballGame()
 
         this.teamAPhotoFile = gameViewModel.getTeamAPhotoFile(game)
+
         this.teamBPhotoFile = gameViewModel.getTeamBPhotoFile(game)
 
 
@@ -135,12 +152,10 @@ class ScoreboardFragment : Fragment() {
         super.onDetach()
         callbacks = null
 
-        if(teamAPhotoUri != null)
-            requireActivity().revokeUriPermission(teamAPhotoUri,
+        requireActivity().revokeUriPermission(teamAPhotoUri,
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
 
-        if(teamBPhotoUri != null)
-          requireActivity().revokeUriPermission(teamBPhotoUri,
+        requireActivity().revokeUriPermission(teamBPhotoUri,
             Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
     }
 
@@ -182,6 +197,11 @@ class ScoreboardFragment : Fragment() {
         teamAImageView= view.findViewById(R.id.teamAImageView)
         teamBImageView = view.findViewById(R.id.teamBImageView)
 
+        teamACheerButton = view.findViewById(R.id.teamACheer)
+        teamBCheerButton = view.findViewById(R.id.teamBCheer)
+
+        cheerPool = CheerPool(activity!!.assets)
+
         if(param1 != null) {
             Log.d(TAG, "Param1 (UUID) received")
             Log.d(TAG, "Game loaded ${game.teamAName} vs ${game.teamBName} (${game.teamAScore} - ${game.teamBName})")
@@ -192,6 +212,31 @@ class ScoreboardFragment : Fragment() {
 
         updatePhotoView();
         updateScores();
+
+        weatherTextView = view.findViewById(R.id.weatherTextView)
+
+        val retrofit: Retrofit = Retrofit.Builder()
+            .baseUrl("https://api.openweathermap.org/")
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+        val openWeatherAPI: OpenWeatherAPI = retrofit.create(OpenWeatherAPI::class.java)
+
+        val response = openWeatherAPI.getContents()
+
+        response.enqueue(object: Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d(TAG, "HTTP request has failed", t)
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                Log.d(TAG, "Response recieved: ${response.body()}")
+
+                weatherTextView.setText(response.body())
+            }
+        })
+
+
+
         return view;
     }
 
@@ -328,20 +373,33 @@ class ScoreboardFragment : Fragment() {
             }
         }
 
+        teamACheerButton.setOnClickListener {
+            Log.d(TAG, "teamACheerButton called")
+          /*  var sound: Sound = cheerPool.sounds.get(0)
+            cheerPool.play(sound)*/
+            var mediaPlayer: MediaPlayer? = MediaPlayer.create(context, R.raw.cjipie)
+            mediaPlayer?.start() // no need to call prepare(); create() does that for you
+        }
+        teamBCheerButton.setOnClickListener {
+            Log.d(TAG, "teamBCheerButton called")
+            var sound: Sound = cheerPool.sounds.get(1)
+            cheerPool.play(sound)
+        }
+
     }
     private fun updatePhotoView() {
         if (teamAPhotoFile.exists()) {
         val bitmap = getScaledBitmap(teamAPhotoFile.path, requireActivity())
             teamAImageView.setImageBitmap(bitmap) //set to the photo view
         } else {
-            teamAImageView.setImageDrawable(null)
+            teamAImageView.setImageResource(R.drawable.celtics);
         }
 
         if (teamBPhotoFile.exists()) {
             val bitmap = getScaledBitmap(teamBPhotoFile.path, requireActivity())
             teamBImageView.setImageBitmap(bitmap) //set to the photo view
         } else {
-            teamBImageView.setImageDrawable(null)
+           teamBImageView.setImageResource(R.drawable.heat)
         }
     }
 

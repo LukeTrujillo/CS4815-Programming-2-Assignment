@@ -15,7 +15,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"></LinearLayout>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/weatherTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -95,16 +102,28 @@
                     android:id="@+id/teamAImageView"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:background="#872323"
                     android:cropToPadding="true"
                     android:scaleType="centerInside"
                     tools:src="@tools:sample/avatars" />
 
-                <ImageButton
-                    android:id="@+id/teamAImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_menu_camera" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/teamACheer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@android:drawable/ic_btn_speak_now" />
+
+                    <ImageButton
+                        android:id="@+id/teamAImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@android:drawable/ic_menu_camera" />
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/teamALabel"
@@ -150,16 +169,29 @@
                     android:id="@+id/teamBImageView"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:background="#2196F3"
                     android:cropToPadding="true"
                     android:scaleType="centerInside"
                     tools:src="@tools:sample/avatars" />
 
-                <ImageButton
-                    android:id="@+id/teamBImageButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_menu_camera" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/teamBCheer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@android:drawable/ic_btn_speak_now" />
+
+                    <ImageButton
+                        android:id="@+id/teamBImageButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@android:drawable/ic_menu_camera" />
+
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/teamBLabel"
