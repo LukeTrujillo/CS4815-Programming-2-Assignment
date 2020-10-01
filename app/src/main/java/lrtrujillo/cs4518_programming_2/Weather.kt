@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName
 
 
 data class Weather (
-
-);
+    var temp:Float
+)
 
 
 data class WeatherResponse (

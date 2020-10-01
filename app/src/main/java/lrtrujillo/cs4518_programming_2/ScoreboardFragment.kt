@@ -26,6 +26,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.io.File
 import java.util.*
@@ -217,21 +218,24 @@ class ScoreboardFragment : Fragment() {
 
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://api.openweathermap.org/")
-            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
         val openWeatherAPI: OpenWeatherAPI = retrofit.create(OpenWeatherAPI::class.java)
 
         val response = openWeatherAPI.getContents()
 
-        response.enqueue(object: Callback<String> {
-            override fun onFailure(call: Call<String>, t: Throwable) {
+        response.enqueue(object: Callback<WeatherResponse> {
+            override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
                 Log.d(TAG, "HTTP request has failed", t)
             }
 
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+            override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
                 Log.d(TAG, "Response recieved: ${response.body()}")
 
-                weatherTextView.setText(response.body())
+                var response : WeatherResponse? = response.body()
+
+                if(response != null)
+                weatherTextView.setText("Worcester: ${response.weather.temp.toString()} Fahrenheit")
             }
         })
 
